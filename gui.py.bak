@@ -1,21 +1,33 @@
 #! /bin/python3
-
+import time
 import tkinter as tk  
 from pySerialTransfer import pySerialTransfer as pt
-
+import serial.tools.list_ports
 class Application(tk.Frame):
 	def __init__(self, master=None):
 		super().__init__(master)
 		self.master = master
 		#self.master.geometry("320x240")
 		self.pack()
+		'''	
+		ports = list(serial.tools.list_ports.comports())
+		for p in ports:
+			if "Arduino Mega 2560" in p.description:
+				print (p[0], p )
+				self.port = p[0]
+				
+				#p.close()
+				
+		time.sleep(5)
+		'''
 		self.connection_status = 'disconnected'
 		self.counter = 0
 		self.uplimit = None
 		self.lowlimit = None
 		
 		self.create_widgets()
-		self.link = pt.SerialTransfer('COM12')
+		self.port = 'COM12'
+		self.link = pt.SerialTransfer(self.port)
 		
 	def create_widgets(self):
 		self.button1 = tk.Button(self, text = "Move Up", command = self.moveup)
@@ -53,6 +65,8 @@ class Application(tk.Frame):
 
 	def set_position(self, slider_value):
 		self.counter = int(slider_value)
+		self.send_data()
+
 		#print("set_position : ", slider_value)
 		print("counter : ", self.counter, end='\r')
 
