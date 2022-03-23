@@ -12,7 +12,7 @@ class Application(tk.Frame):
 		ports = list(serial.tools.list_ports.comports())
 		for p in ports:
 			if "Arduino Mega 2560" in p.description:
-				print (p[0], p )
+				print (p[0] )
 				self.port = p[0]
 				
 				#p.close()
@@ -25,7 +25,7 @@ class Application(tk.Frame):
 		self.lowlimit = None
 		
 		self.create_widgets()
-		self.port = 'COM12'
+		#self.port = 'COM12'
 		self.link = pt.SerialTransfer(self.port)
 		
 	def create_widgets(self):
@@ -47,6 +47,17 @@ class Application(tk.Frame):
 		self.button4 = tk.Button(self, text = "Set  lower limit", command = self.set_lower_limit)
 		self.button4.grid(sticky="ew", row = 1, column = 2, padx=4, pady=4)
 	
+		self.inputtxt = tk.Text(self, height = 1, width = 24)
+		#self.inputtxt.insert(tk.END, self.DEVICE_IP)
+		self.inputtxt.grid(sticky="ew",row=2, column=0, columnspan=3, padx=4, pady=4)
+		# Button Creation
+		printButton = tk.Button(self, text = "Print", command = self.printInput)
+		printButton.grid(sticky="ew", row=3, column=0, columnspan=3, padx=4, pady=4)
+		
+	def printInput(self):
+		inp = self.inputtxt.get(1.0, "end-1c")
+		self.counter = int(inp)
+		self.send_data()
 	def moveup(self):
 		self.counter += 1
 		self.send_data()

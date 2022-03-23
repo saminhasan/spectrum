@@ -44,7 +44,7 @@ void loop()
     uint16_t recSize = 0;
     recSize = myTransfer.rxObj(position, recSize);
   }
-    stepper.moveTo(position);
+    stepper.moveTo(10*position);
 
     stepper.run();
    /* 
