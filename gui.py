@@ -51,10 +51,10 @@ class Application(tk.Frame):
 		#self.inputtxt.insert(tk.END, self.DEVICE_IP)
 		self.inputtxt.grid(sticky="ew",row=2, column=0, columnspan=3, padx=4, pady=4)
 		# Button Creation
-		printButton = tk.Button(self, text = "Print", command = self.printInput)
-		printButton.grid(sticky="ew", row=3, column=0, columnspan=3, padx=4, pady=4)
+		movebutton = tk.Button(self, text = "Move to Position", command = self.move_to_position)
+		movebutton.grid(sticky="ew", row=3, column=0, columnspan=3, padx=4, pady=4)
 		
-	def printInput(self):
+	def move_to_position(self):
 		inp = self.inputtxt.get(1.0, "end-1c")
 		self.counter = int(inp)
 		self.send_data()
