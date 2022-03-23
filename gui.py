@@ -1,6 +1,7 @@
 #! /bin/python3
 
 import tkinter as tk  
+from pySerialTransfer import pySerialTransfer as pt
 
 class Application(tk.Frame):
 	def __init__(self, master=None):
@@ -14,6 +15,7 @@ class Application(tk.Frame):
 		self.lowlimit = None
 		
 		self.create_widgets()
+		self.link = pt.SerialTransfer('COM12')
 		
 	def create_widgets(self):
 		self.button1 = tk.Button(self, text = "Move Up", command = self.moveup)
@@ -36,18 +38,23 @@ class Application(tk.Frame):
 	
 	def moveup(self):
 		self.counter += 1
+		self.send_data()
 		#print("moveup : ", self.counter)
 		print("counter : ", self.counter, end='\r')
 
 		
 	def movedown(self):
 		self.counter -= 1
+		self.send_data()
+
 		#print("movedown : ", self.counter)
 		print("counter : ", self.counter, end='\r')
 
 
 	def set_position(self, slider_value):
 		self.counter = int(slider_value)
+		self.send_data()
+
 		#print("set_position : ", slider_value)
 		print("counter : ", self.counter, end='\r')
 
@@ -68,8 +75,12 @@ class Application(tk.Frame):
 			self.slider['state'] = 'normal'
 			self.slider.config(from_=self.uplimit, to=self.lowlimit)
 		print("\n set_lower_limit : ", self.lowlimit)
-
 		
+		
+	def send_data(self):
+		sendsize = 0;
+		sendsize = self.link.tx_obj(self.counter, start_pos=sendsize)
+		self.link.send(sendsize)
 def main():
 	root = tk.Tk()
 	root.title("Open-Loop Height Control")
