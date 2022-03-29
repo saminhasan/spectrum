@@ -76,7 +76,7 @@ class Application(tk.Frame):
 		
 		self.statusvar = tk.StringVar()
 		self.statusvar.set("Disconneted")
-		self.sbar = tk.Label(self, textvariable=self.statusvar, relief=ttk.SUNKEN, anchor="w")
+		self.sbar = tk.Label(self, textvariable=self.statusvar, relief=tk.SUNKEN, anchor="w")
 		self.sbar.grid(sticky="s", row=8, column=0,columnspan=3)
 
 		
