@@ -9,7 +9,7 @@ class Application(tk.Frame):
 	def __init__(self, master=None):
 		super().__init__(master)
 		self.master = master
-		self.master.geometry("1024x480")
+		self.master.geometry("1024x600")
 		self.pack()
 
 		self.counter = 0
