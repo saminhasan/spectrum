@@ -1,7 +1,8 @@
 import time
 import tkinter as tk
-from pySerialTransfer import pySerialTransfer as pt
 import serial.tools.list_ports
+from pySerialTransfer import pySerialTransfer as pt
+
 
 
 class Application(tk.Frame):
