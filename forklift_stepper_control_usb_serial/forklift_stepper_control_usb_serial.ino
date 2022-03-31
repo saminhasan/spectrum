@@ -6,6 +6,7 @@ SerialTransfer myTransfer;
 // Define stepper motor connections and motor interface type. Motor interface type must be set to 1 when using a driver:
 #define dirPin 2
 #define stepPin 3
+#define enPin 4
 #define motorInterfaceType 1
 
 // Define a stepper and the pins it will use
@@ -15,22 +16,27 @@ AccelStepper stepper = AccelStepper(motorInterfaceType, stepPin, dirPin);
 long position = 0;
 
 
-// Example 3 - Receive with start- and end-markers
-
-const byte numChars = 32;
-char receivedChars[numChars];
-
-boolean newData = false;
+struct STRUCT {
+    long acceleration = 100.0;
+    long maxspeed = 100.0;
+    long position = 0;
+    long uplimit = 0;
+    long lowlimit = 0;
+    bool stop = true;
+    bool set_param = false;
+} testStruct;
 
 void setup()
 {
   Serial.begin(115200);
+    Serial1.begin(115200);
+
   myTransfer.begin(Serial);  
     // Change these to suit your stepper if you want
-  stepper.setMaxSpeed(100);
-  stepper.setAcceleration(50);
+  stepper.setMaxSpeed(1000);
+  stepper.setAcceleration(100);
   //stepper.moveTo(500);
-
+pinMode(enPin,OUTPUT);
 
 }
 
@@ -42,61 +48,49 @@ void loop()
     // use this variable to keep track of how many
     // bytes we've processed from the receive buffer
     uint16_t recSize = 0;
-    recSize = myTransfer.rxObj(position, recSize);
+    recSize = myTransfer.rxObj(testStruct, recSize);
   }
-    stepper.moveTo(position);
+debug_print();
+    
+if(!testStruct.stop)
+{digitalWrite(enPin, LOW);
 
-    stepper.run();
-   /* 
-   Serial.print(" currentPosition : ");
-   Serial.print(stepper.currentPosition());
-   Serial.print("  | ");
-   Serial.print(" targetPositio : ");
-   Serial.print(stepper.targetPosition());
-   Serial.print("  | ");
-   Serial.print(" speed : ");
-   Serial.print(stepper.speed());
-   Serial.println();
+  if (testStruct.set_param)
+  {
+  stepper.setAcceleration(testStruct.acceleration);
+    stepper.setMaxSpeed(testStruct.maxspeed);
+
+   }
+   /*
+
+if(testStruct.position  > testStruct.lowlimit && testStruct.position < testStruct.uplimit)
+   
    */
+   if(true){
+    stepper.moveTo(testStruct.position);
+    stepper.run();
+   }
 }
 
-
-void recvWithStartEndMarkers() {
-    static boolean recvInProgress = false;
-    static byte ndx = 0;
-    char startMarker = '<';
-    char endMarker = '>';
-    char rc;
- 
-    while (Serial.available() > 0 && newData == false) {
-        rc = Serial.read();
-
-        if (recvInProgress == true) {
-            if (rc != endMarker) {
-                receivedChars[ndx] = rc;
-                ndx++;
-                if (ndx >= numChars) {
-                    ndx = numChars - 1;
-                }
-            }
-            else {
-                receivedChars[ndx] = '\0'; // terminate the string
-                recvInProgress = false;
-                ndx = 0;
-                newData = true;
-            }
-        }
-
-        else if (rc == startMarker) {
-            recvInProgress = true;
-        }
-    }
+  else
+digitalWrite(enPin, HIGH);
 }
 
-void showNewData() {
-    if (newData == true) {
-        Serial.print("This just in ... ");
-        Serial.println(receivedChars);
-        newData = false;
-    }
+void debug_print()
+{
+  Serial1.print(testStruct.acceleration);
+  Serial1.print(", ");
+    Serial1.print(testStruct.maxspeed);
+  Serial1.print(", ");
+    Serial1.print(testStruct.position);
+  Serial1.print(", ");
+    Serial1.print(testStruct.uplimit);
+  Serial1.print(", ");
+  Serial1.print(testStruct.lowlimit);
+  Serial1.print(". ");
+    Serial1.print(testStruct.stop);
+  Serial1.print(". ");
+    Serial1.print(testStruct.set_param);
+  Serial1.print(". ");
+  Serial1.println();
 }
